@@ -113,9 +113,24 @@ struct HoleTrackerView: View {
                         .background(Color(.systemGray6))
                         .cornerRadius(12)
                         .padding(.horizontal)
+                    } else {
+                        // Loading or error state
+                        VStack(spacing: 16) {
+                            ProgressView()
+                            Text("Loading hole data...")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding()
                     }
                     
                     Spacer()
+                }
+            }
+            .onAppear {
+                // Ensure hole is loaded when view appears
+                if viewModel.currentHole == nil {
+                    viewModel.loadHole()
                 }
             }
             .navigationTitle(viewModel.currentRound.courseName)

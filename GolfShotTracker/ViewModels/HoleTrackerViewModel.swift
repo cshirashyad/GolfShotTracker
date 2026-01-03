@@ -48,8 +48,20 @@ class HoleTrackerViewModel: ObservableObject {
         loadHole()
     }
     
-    private func loadHole() {
+    func loadHole() {
         currentHole = dataService.fetchHole(round: currentRound, holeNumber: currentHoleNumber)
+        
+        // If hole doesn't exist, create it (shouldn't happen, but safety check)
+        if currentHole == nil, let swiftDataService = dataService as? SwiftDataService {
+            // Use the service to create the hole properly
+            currentHole = swiftDataService.createHoleIfNeeded(round: currentRound, holeNumber: currentHoleNumber)
+        } else if currentHole == nil {
+            // Fallback if we can't cast to SwiftDataService
+            let newHole = Hole(holeNumber: currentHoleNumber, par: 4, round: currentRound)
+            currentRound.holes.append(newHole)
+            dataService.saveHole(newHole)
+            currentHole = newHole
+        }
     }
     
     func incrementShot(type: ShotType) {

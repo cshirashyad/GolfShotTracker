@@ -42,18 +42,28 @@ class SwiftDataService: DataServiceProtocol {
     func createRound(courseName: String, holesCount: Int, user: User?) -> Round {
         let round = Round(courseName: courseName, holesCount: holesCount, startDate: Date(), user: user)
         
-        // Create holes for the round
+        // Insert round first
+        modelContext.insert(round)
+        
+        // Create and insert holes for the round
+        var createdHoles: [Hole] = []
         for holeNumber in 1...holesCount {
             let hole = Hole(holeNumber: holeNumber, par: 4, round: round)
-            round.holes.append(hole)
+            modelContext.insert(hole)
+            createdHoles.append(hole)
         }
         
-        modelContext.insert(round)
+        // Set the holes array all at once
+        round.holes = createdHoles
+        
         do {
             try modelContext.save()
         } catch {
             print("Error creating round: \(error)")
         }
+        
+        // Access the holes to ensure the relationship is loaded
+        _ = round.holes.count
         
         return round
     }
@@ -108,11 +118,31 @@ class SwiftDataService: DataServiceProtocol {
     }
     
     func saveHole(_ hole: Hole) {
+        // Holes should already be in the context when created via createRound
+        // or createHoleIfNeeded. We just need to save the context.
         do {
             try modelContext.save()
         } catch {
             print("Error saving hole: \(error)")
         }
+    }
+    
+    func createHoleIfNeeded(round: Round, holeNumber: Int) -> Hole {
+        if let existingHole = fetchHole(round: round, holeNumber: holeNumber) {
+            return existingHole
+        }
+        
+        let newHole = Hole(holeNumber: holeNumber, par: 4, round: round)
+        modelContext.insert(newHole)
+        round.holes.append(newHole)
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Error creating hole: \(error)")
+        }
+        
+        return newHole
     }
     
     // MARK: - Stats
