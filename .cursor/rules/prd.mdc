@@ -1,0 +1,705 @@
+---
+alwaysApply: false
+---
+# GolfTracker – PRD + Architecture (MVP)
+
+GolfTracker is a simple, fast, on-course golf shot tracker focused on **personal improvement**, especially for kids/learners, using modern Apple technologies and a clean architecture that is easy to extend.
+
+***
+
+## 1. Product Overview
+
+**Name (working)**: GolfTracker
+**Version**: 1.0 (MVP)
+**Platform**: iOS (latest major release only; target iOS 18+ so we can safely use SwiftUI, SwiftData, Apple Intelligence features)[^1][^2]
+**Devices**: iPhone primary; iPad support is a nice-to-have.
+**Offline-first**: All functionality works fully offline; future versions may enable sync/backends.
+**Primary User**: Single primary user on the device (a golfer or parent tracking a kid’s performance).
+
+### 1.1 Goals
+
+- Minimal on-course friction: interaction per hole should be **under 10 seconds**.
+- Simple but extensible data model: start with 1 golfer, later support up to 4 players per round.
+- Local storage with good structure for future analysis, cloud sync, and multi-device support.
+- Provide meaningful **statistics and practice suggestions** using on-device intelligence (Apple Intelligence or other on-device LLM where available).[^1]
+
+
+### 1.2 Non-Goals (MVP)
+
+- No sign-in, accounts, or remote authentication.
+- No backend APIs or remote databases.
+- No official handicap management, slope/rating, tournament features.
+- No multi-player scoring in MVP (but architecture must keep this easy to add later).
+
+***
+
+## 2. Core Functional Requirements
+
+### 2.1 Shot Types \& Hole Tracking
+
+For **each hole** the app tracks:
+
+- Number of **Drives** (≥1; can be more if ball lost/OOB, reloads, etc.).
+- Number of **Long Shots** (> 100 yards; usually second shot on par 5).
+- Number of **Approach Shots** (inside 100 yards and > 15 yards).
+- Number of **Chips** (≤ 15 yards).
+- Number of **Putts**.
+
+Requirements:
+
+- Each shot type has **+** and **–** buttons:
+    - Tapping **+** increments the count.
+    - Tapping **–** decrements but never below zero.
+- One screen per hole with all shot types visible simultaneously.
+- Display hole number, total holes, and par at the top:
+    - Default par = 4.
+    - User can quickly change to 3, 5, or 6 (rare) via a simple segmented control or picker.
+- Navigation:
+    - **Next Hole** button to go forward.
+    - **Previous Hole** button to go back.
+    - **Jump to Hole** control (e.g., sheet with a list or picker) to go to any specific hole (for back 9, skipped holes, etc.).
+- The UI should show:
+    - Current hole (e.g., “Hole 5 of 18”).
+    - Current hole par.
+    - Optional: Total strokes for the hole (sum of all shot types).
+    - Optional: Running total relative to par for the round (e.g., “+3”).
+
+
+### 2.2 Round Lifecycle
+
+**Start of Round:**
+
+- Prompt the user with a **New Round** screen:
+    - Course name (text field; required).
+    - Number of holes: 9 or 18 (segmented control).
+- When the user taps “Begin”:
+    - Create a new Round record.
+    - Automatically store **start date and time** using system time.
+    - Initialize holes from 1…N (N = 9 or 18).
+    - Navigate to Hole 1 tracking screen.
+
+**During Round:**
+
+- User can navigate between holes at any time.
+- Shot counts for each hole are auto-saved locally whenever they change.
+
+**End of Round:**
+
+- When the user reaches beyond the last hole (e.g., taps Next on final hole) or explicitly ends the round:
+    - Show an action sheet or alert:
+        - “Save Round” – persists the round as completed.
+        - “Discard Round” – logically discards (soft delete) the round.
+- Requirements for **discard**:
+    - Implement soft delete (e.g., mark as discarded/hidden but not physically removed).
+    - Provide a way (e.g., in Settings) to **hard delete** discarded rounds later.
+
+
+### 2.3 User Profile (Primary User)
+
+On app’s **first launch**:
+
+- Show a simple onboarding/profile screen:
+    - First name (required).
+    - Last name (required).
+    - Email (required).
+    - Mobile number (optional).
+- Validate email format (basic check) and non-empty required fields.
+- Save this as the **primary user** in local storage.
+- After saving, navigate to the main home screen.
+
+Later:
+
+- In Settings, allow editing these profile fields.
+- Architecture should support adding additional players in the future:
+    - For MVP, only one user record is used; future: multiple users and per-round assigned players.
+
+
+### 2.4 History \& Statistics
+
+**History Screen:**
+
+- Displays a list of past rounds (excluding soft-deleted rounds by default).
+- For each round item:
+    - Course name.
+    - Date (and optionally time).
+    - Total strokes (sum of all holes).
+    - Optional: to-par value if computed at hole level.
+- Tap a round to open a **Round Detail** screen:
+    - Table/list of holes:
+        - Hole number.
+        - Par.
+        - Count of each shot type.
+        - Hole total strokes.
+    - Optionally highlight holes with highest number of putts, chips, etc.
+
+**Soft Delete \& Hard Delete:**
+
+- Users can swipe to delete a round from History:
+    - Mark it as soft-deleted, hide from normal view.
+- In Settings:
+    - Provide a “Manage Deleted Rounds” section or a “Permanently Delete Discarded Rounds” button that hard-deletes all soft-deleted records from storage.
+
+**Statistics Screen:**
+
+- Aggregated stats across rounds:
+    - Distribution of shots by type:
+        - e.g., percentage of drives vs approaches vs chips vs putts.
+    - Averages:
+        - Average putts per hole/round.
+        - Average number of drives per hole/round.
+        - Average approach shots per hole.
+    - Optional:
+        - Trend over time (e.g., putts per round vs date).
+- Visualizations:
+    - Simple bar chart or pie chart for shot breakdown.
+    - Simple trend line for key metrics (e.g., putts per round).
+
+**Advice / Suggestions (Apple Intelligence / On-Device AI):**
+
+- Use on-device AI features where available (Apple Intelligence or local model) to generate:
+    - Natural language summary of the user’s recent performance.
+    - Suggestions on where to focus practice.
+    - Examples:
+        - “Over the last 5 rounds, most of your strokes came from putts (40%). Consider allocating more practice time to putting.”
+        - “Your number of chips per hole is higher than approaches; focus on approach accuracy.”
+- AI should work as:
+    - Compute **deterministic statistics** first.
+    - Pass structured stats (e.g., JSON or typed struct) to an AI component.
+    - Ask AI for a short, actionable summary (1–3 paragraphs max).
+- Must be robust:
+    - If AI is unavailable, fall back to a simple rules-based summary.
+
+***
+
+## 3. Non-Functional Requirements
+
+### 3.1 Simplicity \& UX
+
+- **Shot entry must be extremely fast**:
+    - Large tap targets.
+    - Minimal scrolling; ideally all shot types visible without scrolling on recent iPhones.
+- Haptic feedback on important interactions (e.g., increment/decrement, end round).
+- Support Dark/Light Mode.
+- Basic accessibility:
+    - VoiceOver labels for each button.
+    - Support Dynamic Type when possible without breaking layout.
+- No network requirement for core usage.
+
+
+### 3.2 Performance \& Reliability
+
+- All screens must appear within ~100ms on a modern iPhone.
+- Storage operations must not block the main thread:
+    - Use SwiftData best practices for background operations where needed.[^3]
+- No crash on rapid navigation between holes or rounds.
+
+
+### 3.3 Extensibility
+
+- Architecture must allow later addition of:
+    - Multi-player support (up to 4 players per round).
+    - Backend APIs and cloud sync (e.g., CloudKit, custom server).
+    - Social login (Sign in with Apple, Google, etc.).
+- Ensure data model changes (e.g., adding players) can be performed with SwiftData migrations.
+
+***
+
+## 4. Technical Architecture
+
+### 4.1 Tech Stack
+
+- **Language**: Swift (latest stable, e.g., Swift 6+).
+- **UI**: SwiftUI (latest framework version).[^1]
+- **Architecture pattern**: MVVM.
+- **Persistence**: SwiftData as the primary local storage layer.[^3][^1]
+- **On-device AI**:
+    - Apple Intelligence APIs (where appropriate).
+    - Abstraction layer so that AI can be swapped to other on-device LLMs or local rules.
+
+No external backend in MVP.
+
+### 4.2 High-Level Layered Architecture
+
+Layers:
+
+1. **Presentation Layer (Views)** – SwiftUI views, minimal logic; bind to ViewModels.
+2. **ViewModel Layer** – ObservableObjects with presentation logic and state.
+3. **Domain / Services Layer** – Data access and AI services behind protocols.
+4. **Persistence Layer** – SwiftData models and model context.
+
+#### 4.2.1 Dependencies and Injection
+
+- Define protocols:
+    - `DataServiceProtocol`
+    - `AIServiceProtocol`
+- Provide concrete implementations:
+    - `SwiftDataService` for local storage.
+    - `AppleIntelligenceAIService` for AI-based advice (and optionally `RulesBasedAIService` fallback).
+- Inject services into ViewModels via initializers or environment objects.
+- This design allows easy replacement with:
+    - `CloudDataService` in future.
+    - `RemoteAIService` mapping to other LLMs if needed.
+
+***
+
+## 5. Navigation \& Screen Structure
+
+### 5.1 Global Navigation
+
+**Root**: `TabView` with three main tabs:
+
+1. **Home** – Rounds list and “New Round” creation.
+2. **Stats** – Statistics \& AI-powered suggestions.
+3. **Settings** – Profile management and cleanup tools.
+
+Within each tab, use `NavigationStack` for pushing detail views.
+
+#### 5.1.1 Navigation Diagram
+
+```text
+App (GolfTrackerApp)
+└─ ContentView (TabView)
+   ├─ HomeTab (NavigationStack)
+   │  ├─ HomeView (RoundsList, NewRound button)
+   │  │  ├─ NewRoundSheet (modal)
+   │  │  │   └─ On Begin → HoleTrackerFlow (starting at Hole 1)
+   │  │  └─ RoundDetailView (for a selected round)
+   │  └─ HoleTrackerFlow
+   │      └─ HoleTrackerView (one view reused for different holes)
+   │          └─ EndRoundAlert → Save/Discard → back to Home
+   ├─ StatsTab (NavigationStack)
+   │  └─ StatsView (charts + AI advice)
+   └─ SettingsTab (NavigationStack)
+      └─ SettingsView
+         ├─ ProfileView
+         └─ DataManagementView (hard delete discarded rounds)
+```
+
+
+### 5.2 Screen Specifications
+
+#### 5.2.1 Onboarding / Profile Screen
+
+- Fields:
+    - First Name (TextField, required).
+    - Last Name (TextField, required).
+    - Email (TextField, required, basic validation).
+    - Mobile Number (TextField, optional).
+- Buttons:
+    - “Save \& Continue” (disabled until required fields valid).
+- Behaviors:
+    - On success: create a `User` entity; store as primary user.
+    - Navigate to `HomeView`.
+
+
+#### 5.2.2 Home View (Rounds List)
+
+- Components:
+    - Navigation bar title: “GolfTracker”.
+    - `+ New Round` button (top-right or floating button).
+    - List of existing rounds (excluding soft-deleted).
+- Each round row displays:
+    - Course name.
+    - Date (e.g., “Jan 3, 2026”).
+    - Total strokes and/or relative to par (e.g., “Total: 86 (+14)” if available).
+- Interactions:
+    - Tap: navigate to `RoundDetailView`.
+    - Swipe left: “Delete” (soft delete mark).
+- Empty state:
+    - Show message: “No rounds yet. Start your first round!” with a New Round button.
+
+
+#### 5.2.3 New Round Sheet
+
+- Fields:
+    - Course Name (TextField, required).
+    - Number of Holes:
+        - Segmented control: 9 or 18 (default 18).
+- Buttons:
+    - “Begin Round” (creates Round, sets start `Date()`, and hole count).
+- Behavior:
+    - On Begin: instantiate Round and Holes (1…N).
+    - Close sheet and navigate to `HoleTrackerView` for Hole 1.
+
+
+#### 5.2.4 Hole Tracker View
+
+- Layout concept:
+    - Top:
+        - `Hole X of N`.
+        - Par control:
+            - Label: “Par”.
+            - Segmented control (3, 4, 5, 6) with default 4.
+    - Middle:
+        - Vertical stack or grid of shot counters:
+            - For each shot type:
+                - Label: e.g., “Drives”.
+                - Count display.
+                -                     + and – buttons, large enough for fat-finger taps.
+    - Bottom:
+        - Optional derived info: “Hole strokes: X”, “Round total: Y (+Z)”.
+        - Navigation bar:
+            - “Previous Hole” (disabled on Hole 1).
+            - “Next Hole” (changes label to “End Round” on final hole or just navigates to final).
+            - “Jump to Hole” button that opens a sheet:
+                - Picker from 1…N.
+                - “Go” to navigate to selected hole.
+- Behaviors:
+    - Increment/decrement updates the current `Hole` entity in persistence.
+    - Changing par updates the `Hole.par` property.
+    - Tapping Next:
+        - If not last hole: navigate to next hole.
+        - If last hole: show End Round prompt.
+
+
+#### 5.2.5 End of Round Prompt
+
+- “Round Completed” dialog with:
+    - “Save Round”.
+    - “Discard Round”.
+    - “Cancel” (to remain on last hole).
+- Save Round:
+    - Leave as active record (no flags).
+    - Navigate to Home (Rounds list).
+- Discard Round:
+    - Mark `isDiscarded = true` (or similar flag) for the Round.
+    - Navigate to Home (where it is not shown in main list).
+
+
+#### 5.2.6 Round Detail View
+
+- Show round header:
+    - Course name.
+    - Date.
+    - Holes count.
+- List of holes:
+    - Row: `Hole X | Par Y | Drives D | Longs L | Approaches A | Chips C | Putts P | Total = D+L+A+C+P`.
+- Optional: highlight extremes:
+    - e.g., color-coded for holes with highest putts.
+
+
+#### 5.2.7 Stats View
+
+- Data displayed:
+    - Lifetime statistics across all **non-discarded** rounds.
+    - At minimum:
+        - Total shots for each type.
+        - Percentage breakdown per shot type.
+        - Average shots per hole/round by type.
+- UI:
+    - One or more simple charts:
+        - Pie chart (shot type distribution).
+        - Bar chart (average shot types per hole).
+        - Line chart (putts per round over time).
+- AI summary:
+    - Text section below charts:
+        - Short heading: “Practice Suggestions”.
+        - AI-generated or rules-based summary text.
+    - Behavior:
+        - When Stats screen appears, StatsViewModel computes numeric stats.
+        - AIService consumes stats and returns summary string.
+
+
+#### 5.2.8 Settings View
+
+- Sections:
+    - **Profile**:
+        - Edit first name, last name, email, mobile number.
+    - **Data Management**:
+        - “Permanently delete discarded rounds” button (with confirmation alert).
+    - **Future options** (placeholders only, not functional in MVP):
+        - Cloud sync toggle (greyed out).
+        - Multi-player scoring preferences.
+        - Social sign-in section.
+
+***
+
+## 6. Data Model \& Persistence
+
+Use **SwiftData** to define models and relationships.[^3][^1]
+
+### 6.1 Model Definitions (MVP)
+
+Swift-style sketch (not exact code but strongly guiding):
+
+```swift
+@Model
+class User {
+    @Attribute(.unique) var id: UUID
+    var firstName: String
+    var lastName: String
+    var email: String
+    var phone: String?
+
+    init(firstName: String, lastName: String, email: String, phone: String? = nil) {
+        self.id = UUID()
+        self.firstName = firstName
+        self.lastName = lastName
+        self.email = email
+        self.phone = phone
+    }
+}
+
+@Model
+class Round {
+    @Attribute(.unique) var id: UUID
+    var courseName: String
+    var holesCount: Int
+    var startDate: Date
+    var isDiscarded: Bool
+    @Relationship(.cascade) var holes: [Hole]
+    var user: User?
+
+    init(courseName: String, holesCount: Int, startDate: Date, user: User?) {
+        self.id = UUID()
+        self.courseName = courseName
+        self.holesCount = holesCount
+        this.startDate = startDate
+        self.isDiscarded = false
+        self.user = user
+        self.holes = []
+    }
+}
+
+@Model
+class Hole {
+    var holeNumber: Int
+    var par: Int
+    var drives: Int
+    var longShots: Int
+    var approaches: Int
+    var chips: Int
+    var putts: Int
+    var round: Round?
+
+    init(holeNumber: Int, par: Int = 4, round: Round?) {
+        self.holeNumber = holeNumber
+        self.par = par
+        self.drives = 0
+        self.longShots = 0
+        self.approaches = 0
+        self.chips = 0
+        self.putts = 0
+        self.round = round
+    }
+}
+```
+
+Notes:
+
+- `Round.isDiscarded` implements the **soft delete** behavior.
+- Relationship: Round has many Holes; Hole belongs to a Round.
+- `User` is kept simple but can be extended later.
+- Future multi-player extension: add `Player` model and `RoundPlayer` relationship instead of `user` being singular.
+
+
+### 6.2 Storage Requirements
+
+- SwiftData container configured in the app entry point (`@main` app) with these models.
+- All write operations (updates to holes, new rounds, discards) must be persisted via `ModelContext`.
+- Queries:
+    - Active rounds list:
+        - `@Query(filter: #Predicate<Round> { !$0.isDiscarded })`.
+    - Stats compute:
+        - Use aggregated queries where possible; otherwise, iterate in memory (MVP scale small).
+
+***
+
+## 7. Services \& MVVM Layer
+
+### 7.1 DataServiceProtocol
+
+Abstracts away storage details:
+
+```swift
+protocol DataServiceProtocol {
+    // User
+    func fetchPrimaryUser() -> User?
+    func savePrimaryUser(_ user: User)
+
+    // Rounds
+    func createRound(courseName: String, holesCount: Int, user: User) -> Round
+    func fetchRounds(includeDiscarded: Bool) -> [Round]
+    func markRoundDiscarded(_ round: Round)
+    func hardDeleteDiscardedRounds()
+
+    // Holes
+    func fetchHole(round: Round, holeNumber: Int) -> Hole?
+    func saveHole(_ hole: Hole)
+
+    // Stats
+    func computeStats() -> StatsSummary
+}
+```
+
+Concrete implementation: `SwiftDataService`.
+
+### 7.2 AIServiceProtocol
+
+Encapsulates AI summary logic:
+
+```swift
+struct StatsSummary {
+    var totalRounds: Int
+    var totalHoles: Int
+    var totalDrives: Int
+    var totalLongShots: Int
+    var totalApproaches: Int
+    var totalChips: Int
+    var totalPutts: Int
+    // Derived metrics like averages, percentages can be included
+}
+
+protocol AIServiceProtocol {
+    func generateAdvice(for stats: StatsSummary) async -> String
+}
+```
+
+- `AppleIntelligenceAIService` implementation:
+    - Uses Apple Intelligence or on-device LLM to turn `StatsSummary` into friendly advice text.
+    - Must be deterministic given the stats and not alter the numeric results.
+- `RulesBasedAIService` fallback:
+    - If AI not available, compute rule-based suggestions from percentages.
+
+
+### 7.3 ViewModels
+
+All ViewModels are `ObservableObject`.
+
+- **HomeViewModel**
+    - Dependencies: `DataServiceProtocol`.
+    - Exposes:
+        - `@Published var rounds: [Round]`.
+        - Methods:
+            - `loadRounds()`.
+            - `deleteRound(_ round)` (soft delete).
+- **NewRoundViewModel**
+    - Holds course name, holes count, validation.
+    - On confirm, calls `DataService` to create Round and Holes.
+- **HoleTrackerViewModel**
+    - Dependencies: `DataServiceProtocol`.
+    - State:
+        - `currentRound: Round`.
+        - `currentHoleNumber: Int`.
+        - `currentHole: Hole`.
+    - Methods:
+        - `incrementShot(type:)`, `decrementShot(type:)`.
+        - `setPar(_ par: Int)`.
+        - `goToNextHole()`.
+        - `goToPreviousHole()`.
+        - `jumpToHole(_ number: Int)`.
+- **StatsViewModel**
+    - Dependencies: `DataServiceProtocol`, `AIServiceProtocol`.
+    - State:
+        - `@Published var statsSummary: StatsSummary`.
+        - `@Published var advice: String`.
+    - Methods:
+        - `loadStats()` → compute stats, then call AI for advice.
+- **SettingsViewModel**
+    - Dependencies: `DataServiceProtocol`.
+    - Methods:
+        - `updateUser(...)`.
+        - `hardDeleteDiscardedRounds()`.
+
+***
+
+## 8. File \& Module Structure
+
+A clear structure helps Cursor and LLMs keep code organized and reduces hallucination:
+
+```text
+GolfTracker/
+├── GolfTrackerApp.swift          // App entry, SwiftData container setup
+├── Models/
+│   ├── User.swift
+│   ├── Round.swift
+│   ├── Hole.swift
+│   └── StatsSummary.swift
+├── Services/
+│   ├── DataServiceProtocol.swift
+│   ├── SwiftDataService.swift
+│   ├── AIServiceProtocol.swift
+│   ├── AppleIntelligenceAIService.swift
+│   └── RulesBasedAIService.swift
+├── ViewModels/
+│   ├── HomeViewModel.swift
+│   ├── NewRoundViewModel.swift
+│   ├── HoleTrackerViewModel.swift
+│   ├── StatsViewModel.swift
+│   └── SettingsViewModel.swift
+├── Views/
+│   ├── Root/
+│   │   └── ContentView.swift       // TabView
+│   ├── Onboarding/
+│   │   └── ProfileView.swift
+│   ├── Home/
+│   │   ├── HomeView.swift
+│   │   ├── RoundRowView.swift
+│   │   ├── NewRoundSheetView.swift
+│   │   └── RoundDetailView.swift
+│   ├── HoleTracker/
+│   │   ├── HoleTrackerView.swift
+│   │   ├── ShotCounterRowView.swift
+│   │   └── JumpToHoleSheetView.swift
+│   ├── Stats/
+│   │   ├── StatsView.swift
+│   │   └── ChartsView.swift
+│   └── Settings/
+│       ├── SettingsView.swift
+│       └── DataManagementView.swift
+├── Extensions/
+│   ├── Haptics+Extensions.swift
+│   └── View+Accessibility.swift
+└── PreviewContent/
+    └── SampleData.swift
+```
+
+
+***
+
+## 9. Implementation Notes for Agentic AI (Cursor + LLMs)
+
+When using Cursor and LLMs (e.g., Bedrock/Claude) to build this app:
+
+- Always refer them back to this document and to the official Apple documentation for:
+    - SwiftUI.
+    - SwiftData.
+    - Apple Intelligence / App Intents.
+- In prompts, be explicit:
+    - “Use the `@Model` definitions exactly as specified in the PRD+Architecture document.”
+    - “Follow the file structure outlined in the PRD+Architecture document.”
+    - “Do not invent new fields; if fields are needed, propose them and wait for confirmation.”
+- Ask the LLM to:
+    - Generate ViewModels first (pure logic, no UI).
+    - Then generate SwiftUI Views that bind to those ViewModels.
+    - Then generate tests for ViewModels (e.g., shot increment/decrement logic, stats calculation).
+- Use small, iterative prompts:
+    - “Implement HoleTrackerViewModel as described.”
+    - “Now implement HoleTrackerView.swift that uses HoleTrackerViewModel and matches the UX described.”
+
+***
+
+## 10. Future Extensions (Non-MVP)
+
+- Multi-player per round (up to 4 players):
+    - Add Player model and many-to-many relationship to Round.
+    - Per-hole per-player metrics.
+- Cloud and multi-device sync:
+    - Add CloudKit integration via SwiftData/NSPersistentCloudKitContainer.[^4][^5]
+- Authentication:
+    - Sign in with Apple / Google with a modular AuthService.
+- Course difficulty:
+    - Track slope and rating for more advanced analytics (optional).
+- Practice mode:
+    - A separate mode tracking shots independent of holes, for range sessions.
+- Notifications and widgets:
+    - Reminders to practice specific focus areas (e.g., putting).
+    - Live Activity or widget for an ongoing round.
+
+***
+
+This combined PRD + Architecture document is intended to be **the single source of truth** for the GolfTracker MVP. Any implementation done by Cursor or LLMs should adhere strictly to:
+
+- Feature scope and UX behaviors in sections 2, 5.
+- Data model and persistence descriptions in section 6.
+- Architecture and file structure in sections 4 and 8.
