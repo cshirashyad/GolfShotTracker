@@ -42,6 +42,8 @@ class HoleTrackerViewModel: ObservableObject {
     }
     
     init(round: Round, dataService: DataServiceProtocol) {
+        print("🟢 HoleTrackerViewModel init - Round: \(round.courseName), Holes count: \(round.holesCount)")
+        print("🟢 Round holes array count: \(round.holes.count)")
         self.currentRound = round
         self.currentHoleNumber = 1
         self.dataService = dataService
@@ -49,18 +51,27 @@ class HoleTrackerViewModel: ObservableObject {
     }
     
     func loadHole() {
+        print("🟢 loadHole() called for hole \(currentHoleNumber)")
+        print("🟢 Round has \(currentRound.holes.count) holes in array")
         currentHole = dataService.fetchHole(round: currentRound, holeNumber: currentHoleNumber)
         
-        // If hole doesn't exist, create it (shouldn't happen, but safety check)
-        if currentHole == nil, let swiftDataService = dataService as? SwiftDataService {
-            // Use the service to create the hole properly
-            currentHole = swiftDataService.createHoleIfNeeded(round: currentRound, holeNumber: currentHoleNumber)
-        } else if currentHole == nil {
-            // Fallback if we can't cast to SwiftDataService
-            let newHole = Hole(holeNumber: currentHoleNumber, par: 4, round: currentRound)
-            currentRound.holes.append(newHole)
-            dataService.saveHole(newHole)
-            currentHole = newHole
+        if let hole = currentHole {
+            print("🟢 Found hole \(currentHoleNumber): par=\(hole.par)")
+        } else {
+            print("🟡 Hole \(currentHoleNumber) not found, creating...")
+            // If hole doesn't exist, create it (shouldn't happen, but safety check)
+            if let swiftDataService = dataService as? SwiftDataService {
+                // Use the service to create the hole properly
+                currentHole = swiftDataService.createHoleIfNeeded(round: currentRound, holeNumber: currentHoleNumber)
+                print("🟢 Created hole \(currentHoleNumber)")
+            } else {
+                // Fallback if we can't cast to SwiftDataService
+                let newHole = Hole(holeNumber: currentHoleNumber, par: 4, round: currentRound)
+                currentRound.holes.append(newHole)
+                dataService.saveHole(newHole)
+                currentHole = newHole
+                print("🟢 Created hole \(currentHoleNumber) via fallback")
+            }
         }
     }
     

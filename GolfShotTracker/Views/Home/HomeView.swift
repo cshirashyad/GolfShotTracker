@@ -46,7 +46,16 @@ struct HomeView: View {
             }
             .sheet(isPresented: $showNewRoundSheet) {
                 NewRoundSheetView(dataService: dataService, user: user) { round in
-                    createdRound = round
+                    print("🟠 onRoundCreated callback - Round: \(round.courseName), Holes: \(round.holes.count)")
+                    // Refresh the round from context to ensure relationships are loaded
+                    if let swiftDataService = dataService as? SwiftDataService,
+                       let refreshedRound = swiftDataService.fetchRound(byId: round.id) {
+                        print("🟠 Refreshed round from context - Holes: \(refreshedRound.holes.count)")
+                        createdRound = refreshedRound
+                    } else {
+                        createdRound = round
+                    }
+                    print("🟠 Setting showHoleTracker = true")
                     showHoleTracker = true
                 }
             }
@@ -55,6 +64,16 @@ struct HomeView: View {
                     HoleTrackerView(round: round, dataService: dataService) {
                         viewModel.loadRounds()
                         showHoleTracker = false
+                    }
+                } else {
+                    // Fallback view if round is nil
+                    VStack {
+                        Text("Error: Round not found")
+                            .font(.headline)
+                        Button("Close") {
+                            showHoleTracker = false
+                        }
+                        .buttonStyle(.borderedProminent)
                     }
                 }
             }

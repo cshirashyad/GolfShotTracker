@@ -6,14 +6,17 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct HoleTrackerView: View {
+    @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel: HoleTrackerViewModel
     @State private var showEndRoundAlert = false
     @State private var showJumpToHoleSheet = false
     let onRoundComplete: () -> Void
     
     init(round: Round, dataService: DataServiceProtocol, onRoundComplete: @escaping () -> Void) {
+        print("🟣 HoleTrackerView init - Round: \(round.courseName)")
         _viewModel = StateObject(wrappedValue: HoleTrackerViewModel(round: round, dataService: dataService))
         self.onRoundComplete = onRoundComplete
     }
@@ -128,8 +131,11 @@ struct HoleTrackerView: View {
                 }
             }
             .onAppear {
+                print("🟣 HoleTrackerView onAppear")
+                print("🟣 Current hole: \(viewModel.currentHole == nil ? "nil" : "exists")")
                 // Ensure hole is loaded when view appears
                 if viewModel.currentHole == nil {
+                    print("🟣 Loading hole...")
                     viewModel.loadHole()
                 }
             }

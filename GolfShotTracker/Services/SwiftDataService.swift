@@ -40,10 +40,12 @@ class SwiftDataService: DataServiceProtocol {
     // MARK: - Rounds
     
     func createRound(courseName: String, holesCount: Int, user: User?) -> Round {
+        print("🔵 Creating round: \(courseName), holes: \(holesCount)")
         let round = Round(courseName: courseName, holesCount: holesCount, startDate: Date(), user: user)
         
         // Insert round first
         modelContext.insert(round)
+        print("🔵 Round inserted into context")
         
         // Create and insert holes for the round
         var createdHoles: [Hole] = []
@@ -51,19 +53,23 @@ class SwiftDataService: DataServiceProtocol {
             let hole = Hole(holeNumber: holeNumber, par: 4, round: round)
             modelContext.insert(hole)
             createdHoles.append(hole)
+            print("🔵 Created hole \(holeNumber)")
         }
         
         // Set the holes array all at once
         round.holes = createdHoles
+        print("🔵 Set \(createdHoles.count) holes on round")
         
         do {
             try modelContext.save()
+            print("🔵 Round saved successfully")
         } catch {
-            print("Error creating round: \(error)")
+            print("❌ Error creating round: \(error)")
         }
         
         // Access the holes to ensure the relationship is loaded
-        _ = round.holes.count
+        let holesCount = round.holes.count
+        print("🔵 Round has \(holesCount) holes after save")
         
         return round
     }
@@ -83,6 +89,18 @@ class SwiftDataService: DataServiceProtocol {
         } catch {
             print("Error fetching rounds: \(error)")
             return []
+        }
+    }
+    
+    func fetchRound(byId id: UUID) -> Round? {
+        let descriptor = FetchDescriptor<Round>(
+            predicate: #Predicate<Round> { $0.id == id }
+        )
+        do {
+            return try modelContext.fetch(descriptor).first
+        } catch {
+            print("Error fetching round by ID: \(error)")
+            return nil
         }
     }
     

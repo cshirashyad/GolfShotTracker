@@ -52,9 +52,14 @@ struct NewRoundSheetView: View {
                 
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Begin Round") {
+                        print("🟠 Begin Round button tapped")
                         let round = viewModel.createRound(user: user)
+                        print("🟠 Round created, calling onRoundCreated")
                         dismiss()
-                        onRoundCreated(round)
+                        // Small delay to ensure dismiss completes
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            onRoundCreated(round)
+                        }
                     }
                     .disabled(!viewModel.isValid)
                 }

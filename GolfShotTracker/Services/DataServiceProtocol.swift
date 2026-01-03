@@ -15,6 +15,7 @@ protocol DataServiceProtocol {
     // Rounds
     func createRound(courseName: String, holesCount: Int, user: User?) -> Round
     func fetchRounds(includeDiscarded: Bool) -> [Round]
+    func fetchRound(byId id: UUID) -> Round?
     func markRoundDiscarded(_ round: Round)
     func hardDeleteDiscardedRounds()
     
