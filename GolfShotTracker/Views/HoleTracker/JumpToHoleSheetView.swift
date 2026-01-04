@@ -4,6 +4,21 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Jump to Hole Sheet View
+//
+//  Modal sheet that allows users to quickly navigate to any hole in the current round.
+//  Useful for jumping to specific holes (e.g., starting on hole 10, correcting a mistake).
+//
+//  Features:
+//  - Wheel picker for hole selection
+//  - Shows all holes in the round (1 to totalHoles)
+//  - Cancel and Go buttons
+//  - Calls completion handler with selected hole number
+//
+//  Usage:
+//  - Accessed from HoleTrackerView's toolbar
+//  - Allows quick navigation without tapping through multiple holes
+//
 
 import SwiftUI
 

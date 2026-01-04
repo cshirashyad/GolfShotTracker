@@ -4,6 +4,29 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Profile/Onboarding View
+//
+//  First-time user onboarding screen that collects basic profile information.
+//  This view is shown only on the app's first launch when no user exists.
+//
+//  Features:
+//  - Collects required user information (first name, last name, email)
+//  - Optional phone number field
+//  - Email format validation
+//  - Form validation (save button disabled until valid)
+//  - Creates and saves primary user to database
+//  - Dismisses to main app after successful save
+//
+//  Fields:
+//  - First Name: Required, text input
+//  - Last Name: Required, text input
+//  - Email: Required, validated email format
+//  - Mobile Number: Optional, phone number input
+//
+//  Dependencies:
+//  - SettingsViewModel: Reused for profile management logic
+//  - DataServiceProtocol: For saving user profile
+//
 
 import SwiftUI
 

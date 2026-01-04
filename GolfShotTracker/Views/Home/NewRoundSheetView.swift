@@ -4,6 +4,26 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - New Round Sheet View
+//
+//  Modal sheet for creating a new golf round. Collects course name and
+//  number of holes before starting the round.
+//
+//  Features:
+//  - Course name text input (required)
+//  - Holes count picker (9 or 18, default: 18)
+//  - Form validation (Begin button disabled until valid)
+//  - Creates new Round with all holes initialized
+//  - Calls completion handler with created round
+//
+//  User Flow:
+//  - User enters course name and selects holes
+//  - Taps "Begin Round" → Creates round → Dismisses → Opens HoleTrackerView
+//
+//  Dependencies:
+//  - NewRoundViewModel: Manages form state and round creation
+//  - DataServiceProtocol: For creating the round
+//
 
 import SwiftUI
 

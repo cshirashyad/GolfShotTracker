@@ -4,6 +4,25 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Statistics Summary
+//
+//  A value type that aggregates statistics across all completed rounds.
+//  Used for displaying lifetime statistics and generating AI-powered practice suggestions.
+//
+//  Properties:
+//  - Aggregated counts for all shot types across all rounds
+//  - Total rounds and holes played
+//
+//  Computed Properties:
+//  - Averages: Average shots per hole for each shot type
+//  - Percentages: Percentage distribution of each shot type
+//  - totalShots: Grand total of all shots across all rounds
+//
+//  Usage:
+//  - Created by SwiftDataService.computeStats()
+//  - Consumed by StatsViewModel for display
+//  - Passed to AIService for generating practice advice
+//
 
 import Foundation
 

@@ -4,6 +4,30 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Charts View
+//
+//  Displays visual charts for golf statistics using Swift Charts framework.
+//  Provides graphical representation of shot distribution and averages.
+//
+//  Charts Displayed:
+//  1. Pie Chart (Donut): Shot type distribution as percentages
+//     - Color-coded sectors for each shot type
+//     - Shows percentages for sectors > 5%
+//     - Legend below chart
+//
+//  2. Bar Chart: Average shots per hole by type
+//     - Horizontal bars showing average for each shot type
+//     - Color-coded to match pie chart
+//
+//  Visual Design:
+//  - Consistent color scheme across charts
+//  - Responsive layout that adapts to screen size
+//  - Clear labels and legends
+//
+//  Dependencies:
+//  - Swift Charts framework for visualization
+//  - StatsSummary: Provides data for charts
+//
 
 import SwiftUI
 import Charts

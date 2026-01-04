@@ -4,6 +4,31 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Hole Model
+//
+//  Represents a single hole in a golf round with detailed shot tracking.
+//  This is a SwiftData @Model that stores all shot counts for a specific hole.
+//
+//  Properties:
+//  - holeNumber: The hole number (1-18)
+//  - par: The par value for this hole (typically 3, 4, or 5)
+//  - drives: Number of tee shots/drives
+//  - longShots: Number of long shots (>100 yards, usually second shot on par 5)
+//  - approaches: Number of approach shots (inside 100 yards, >15 yards)
+//  - chips: Number of chip shots (≤15 yards)
+//  - putts: Number of putts
+//  - fairwayBunkerShots: Number of shots from fairway bunkers
+//  - greensideBunkerShots: Number of shots from greenside bunkers
+//  - penalties: Number of penalty strokes
+//  - round: Reference to the parent Round
+//
+//  Computed Properties:
+//  - totalStrokes: Sum of all shot types for this hole
+//  - scoreRelativeToPar: Score relative to par for this hole
+//
+//  Relationships:
+//  - Belongs to a Round (many-to-one relationship)
+//
 
 import Foundation
 import SwiftData

@@ -4,11 +4,37 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Hole Tracker View Model
+//
+//  ViewModel for tracking shots during an active golf round. This is the core
+//  view model that manages shot counting, hole navigation, and round state.
+//
+//  Responsibilities:
+//  - Track current hole and round
+//  - Increment/decrement shot counts for all shot types
+//  - Navigate between holes (next, previous, jump to specific hole)
+//  - Update par for current hole
+//  - Calculate round totals and score relative to par
+//  - Auto-save all changes to persistence
+//
+//  Published Properties:
+//  - currentRound: The Round being tracked
+//  - currentHoleNumber: Current hole number (1-based)
+//  - currentHole: The Hole object for the current hole
+//
+//  Shot Types:
+//  - Supports all shot types: drives, long shots, approaches, chips, putts,
+//    fairway bunker shots, greenside bunker shots, and penalties
+//
+//  Dependencies:
+//  - DataServiceProtocol: For loading and saving holes
+//
 
 import Foundation
 import SwiftUI
 import Combine
 
+/// Enumeration of all shot types that can be tracked for a hole
 enum ShotType {
     case drives
     case longShots

@@ -4,6 +4,27 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Rules-Based AI Service
+//
+//  Fallback implementation of AIServiceProtocol that uses rule-based logic
+//  to generate practice suggestions from golf statistics.
+//
+//  Algorithm:
+//  - Analyzes shot distribution percentages and averages
+//  - Applies predefined rules to identify areas for improvement
+//  - Generates actionable suggestions based on statistical patterns
+//
+//  Rules:
+//  - High putt percentage (>40%) or high average putts (>2.5/hole) → putting practice
+//  - High chip percentage (>25%) → approach accuracy focus
+//  - Low approach percentage (<15%) → distance control work
+//  - High drives per hole (>1.2) → tee shot accuracy
+//
+//  Usage:
+//  - Used as fallback when Apple Intelligence is unavailable
+//  - Always provides suggestions, even with minimal data
+//  - Returns encouraging message if no specific issues detected
+//
 
 import Foundation
 

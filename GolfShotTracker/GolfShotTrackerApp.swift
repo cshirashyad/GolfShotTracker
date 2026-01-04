@@ -4,6 +4,17 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - App Entry Point
+//
+//  This is the main entry point for the GolfShotTracker iOS application.
+//  It configures the SwiftData model container with the app's data models (User, Round, Hole)
+//  and handles database migration for schema changes.
+//
+//  Key Responsibilities:
+//  - Initialize SwiftData ModelContainer with the app's schema
+//  - Handle database migrations when new properties are added to models
+//  - Provide the root ContentView to the app's WindowGroup
+//
 
 import SwiftUI
 import SwiftData

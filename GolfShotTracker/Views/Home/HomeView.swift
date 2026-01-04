@@ -4,6 +4,27 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Home View
+//
+//  The main home screen that displays a list of completed golf rounds.
+//  This is the primary entry point for viewing past rounds and starting new ones.
+//
+//  Features:
+//  - Displays list of all active (non-discarded) rounds
+//  - Empty state with call-to-action when no rounds exist
+//  - "New Round" button to start a new round
+//  - Tap a round to view details
+//  - Swipe to delete (soft delete) rounds
+//  - Navigation to round detail view and hole tracker
+//
+//  Navigation Flow:
+//  - New Round button → NewRoundSheetView → HoleTrackerView (full screen)
+//  - Tap round → RoundDetailView
+//
+//  Dependencies:
+//  - HomeViewModel: Manages rounds list and deletion
+//  - DataServiceProtocol: For data operations
+//
 
 import SwiftUI
 

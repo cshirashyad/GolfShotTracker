@@ -4,6 +4,31 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Statistics View
+//
+//  Displays lifetime golf statistics and AI-powered practice suggestions.
+//  This view helps golfers understand their performance patterns and get
+//  actionable advice for improvement.
+//
+//  Features:
+//  - Summary statistics cards (rounds, holes, total shots, averages)
+//  - Visual charts (pie chart for shot distribution, bar chart for averages)
+//  - AI-generated practice suggestions based on statistics
+//  - Loading state while computing statistics
+//  - Empty state when no rounds have been completed
+//
+//  Statistics Displayed:
+//  - Total rounds and holes played
+//  - Total shots by type
+//  - Average shots per hole for each type
+//  - Percentage distribution of shot types
+//
+//  Dependencies:
+//  - StatsViewModel: Computes statistics and manages AI advice
+//  - ChartsView: Displays visual charts
+//  - DataServiceProtocol: For fetching statistics
+//  - AIServiceProtocol: For generating practice suggestions
+//
 
 import SwiftUI
 

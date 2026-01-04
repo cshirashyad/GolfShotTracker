@@ -4,6 +4,21 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Round Row View
+//
+//  A reusable component that displays a single round in the rounds list.
+//  Shows essential information in a compact, scannable format.
+//
+//  Displays:
+//  - Course name (headline)
+//  - Date played (subheadline)
+//  - Total strokes
+//  - Score relative to par (color-coded: red for over par, green for under par)
+//
+//  Usage:
+//  - Used in HomeView's rounds list
+//  - Tappable to navigate to RoundDetailView
+//
 
 import SwiftUI
 

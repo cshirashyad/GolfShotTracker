@@ -4,6 +4,26 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Data Management View
+//
+//  A reusable component for data management operations in the Settings view.
+//  Provides functionality to permanently delete discarded rounds.
+//
+//  Features:
+//  - "Permanently Delete Discarded Rounds" button
+//  - Confirmation alert before deletion
+//  - Clear warning about irreversible action
+//  - Destructive button styling
+//
+//  Safety:
+//  - Requires explicit confirmation before deletion
+//  - Clear messaging about data loss
+//  - Only affects soft-deleted (discarded) rounds
+//
+//  Usage:
+//  - Embedded in SettingsView as a section
+//  - Uses DataServiceProtocol for deletion operation
+//
 
 import SwiftUI
 

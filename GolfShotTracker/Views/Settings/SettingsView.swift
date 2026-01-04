@@ -4,6 +4,28 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Settings View
+//
+//  Manages user profile settings and data management options.
+//  Allows users to edit their profile information and manage app data.
+//
+//  Features:
+//  - Profile editing (first name, last name, email, phone)
+//  - Form validation with email format checking
+//  - Save confirmation alert
+//  - Data management (hard delete discarded rounds)
+//  - Placeholder sections for future features (cloud sync, multi-player)
+//
+//  Sections:
+//  1. Profile: Editable user information
+//  2. Data Management: Permanently delete discarded rounds
+//  3. Future Features: Placeholders for upcoming functionality
+//
+//  Dependencies:
+//  - SettingsViewModel: Manages profile state and validation
+//  - DataManagementView: Handles data deletion operations
+//  - DataServiceProtocol: For saving profile updates
+//
 
 import SwiftUI
 

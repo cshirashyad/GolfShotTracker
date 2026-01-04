@@ -4,6 +4,28 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Shot Counter Row View
+//
+//  A reusable component for displaying and controlling a single shot type counter.
+//  Provides large, easy-to-tap buttons for fast on-course shot entry.
+//
+//  Features:
+//  - Label with icon for shot type identification
+//  - Large decrement button (disabled when count is 0)
+//  - Prominent count display
+//  - Large increment button
+//  - Rounded background for visual separation
+//  - Full VoiceOver accessibility support
+//
+//  Design:
+//  - Large tap targets for fat-finger friendly interaction
+//  - Color-coded buttons (red for decrement, green for increment)
+//  - Bold count display for quick scanning
+//
+//  Usage:
+//  - Used in HoleTrackerView for each shot type
+//  - Each instance tracks one shot type (drives, putts, etc.)
+//
 
 import SwiftUI
 

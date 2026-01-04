@@ -4,6 +4,30 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Root Content View
+//
+//  The root view of the application that manages the overall navigation structure
+//  and service initialization. This view determines whether to show onboarding
+//  or the main app interface.
+//
+//  Responsibilities:
+//  - Initialize data service and AI service
+//  - Check if user has completed onboarding
+//  - Display onboarding (ProfileView) for first-time users
+//  - Display main TabView (Home, Stats, Settings) for returning users
+//
+//  Navigation Structure:
+//  - Onboarding → ProfileView (first launch only)
+//  - Main App → TabView with three tabs:
+//    • Home: Rounds list and new round creation
+//    - Stats: Statistics and practice suggestions
+//    - Settings: Profile and data management
+//
+//  Dependencies:
+//  - SwiftData ModelContext: For data persistence
+//  - SwiftDataService: Concrete data service implementation
+//  - AppleIntelligenceAIService: AI service for practice suggestions
+//
 
 import SwiftUI
 import SwiftData

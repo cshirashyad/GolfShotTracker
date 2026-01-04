@@ -4,6 +4,35 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Hole Tracker View
+//
+//  The primary view for tracking shots during an active golf round.
+//  This full-screen view allows golfers to quickly record shots for each hole.
+//
+//  Features:
+//  - Display current hole number and par
+//  - Shot counters for all shot types with +/- buttons
+//  - Large tap targets for fast on-course entry
+//  - Par adjustment (3, 4, 5, or 6)
+//  - Navigation between holes (previous, next, jump to hole)
+//  - Real-time round totals and score relative to par
+//  - End round dialog when completing final hole
+//
+//  Shot Types Tracked:
+//  - Drives, Long Shots, Approaches, Chips, Putts
+//  - Fairway Bunker Shots, Greenside Bunker Shots
+//  - Penalties
+//
+//  User Experience:
+//  - Haptic feedback on button taps
+//  - Auto-saves all changes immediately
+//  - Shows loading state if hole data isn't ready
+//  - Full-screen presentation for focused tracking
+//
+//  Dependencies:
+//  - HoleTrackerViewModel: Manages shot tracking and navigation
+//  - DataServiceProtocol: For persisting shot data
+//
 
 import SwiftUI
 import SwiftData

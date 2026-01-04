@@ -4,6 +4,32 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Round Detail View
+//
+//  Displays detailed information about a completed golf round, including
+//  all holes and their shot breakdowns. Supports both view and edit modes.
+//
+//  Features:
+//  - Round summary header (course name, date, total strokes, score relative to par)
+//  - List of all holes with shot breakdowns
+//  - Edit mode toggle (Edit/Done button)
+//  - In edit mode: Editable fields for all shot types and par
+//  - Auto-saves all edits immediately
+//  - Color-coded display of bunker shots and penalties when present
+//
+//  View Modes:
+//  - View Mode: Read-only display of hole details
+//  - Edit Mode: Full editing capability for all hole scores
+//
+//  Components:
+//  - HoleDetailRowView: Read-only hole display
+//  - EditableHoleDetailRowView: Editable hole display with steppers
+//  - EditableShotRow: Reusable component for editing individual shot types
+//
+//  Dependencies:
+//  - RoundDetailViewModel: Manages edit state and updates
+//  - DataServiceProtocol: For saving hole updates
+//
 
 import SwiftUI
 

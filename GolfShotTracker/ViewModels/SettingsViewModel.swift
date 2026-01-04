@@ -4,6 +4,28 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Settings View Model
+//
+//  ViewModel for the Settings tab that manages user profile and data management.
+//  Handles both onboarding (first-time user setup) and profile editing.
+//
+//  Responsibilities:
+//  - Load and display current user profile
+//  - Validate and save user profile updates
+//  - Handle hard deletion of discarded rounds
+//  - Email format validation
+//
+//  Published Properties:
+//  - user: Current user object (nil if no user exists)
+//  - firstName, lastName, email, phone: Form fields for user profile
+//
+//  Validation:
+//  - isValid: Returns true if required fields (first name, last name, email) are valid
+//  - Email format is validated using regex
+//
+//  Dependencies:
+//  - DataServiceProtocol: For fetching and saving user data
+//
 
 import Foundation
 import SwiftUI

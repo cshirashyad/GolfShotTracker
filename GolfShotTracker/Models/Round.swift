@@ -4,6 +4,28 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - Round Model
+//
+//  Represents a complete golf round (9 or 18 holes) played at a specific course.
+//  This is a SwiftData @Model that contains all holes played during the round.
+//
+//  Properties:
+//  - id: Unique identifier (UUID) for the round
+//  - courseName: Name of the golf course where the round was played
+//  - holesCount: Number of holes in the round (9 or 18)
+//  - startDate: Date and time when the round started
+//  - isDiscarded: Boolean flag for soft delete (hides round from main list)
+//  - holes: Array of Hole objects representing each hole in the round
+//  - user: Reference to the User who played this round (optional)
+//
+//  Computed Properties:
+//  - totalStrokes: Sum of all strokes across all holes in the round
+//  - scoreRelativeToPar: Total score relative to par (positive = over par, negative = under par)
+//
+//  Relationships:
+//  - Has a one-to-many relationship with Hole (cascade delete)
+//  - Has an optional relationship with User
+//
 
 import Foundation
 import SwiftData

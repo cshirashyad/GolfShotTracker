@@ -4,6 +4,25 @@
 //
 //  Created by Chandra on 1/3/26.
 //
+//  MARK: - SwiftData Service Implementation
+//
+//  Concrete implementation of DataServiceProtocol using SwiftData for local persistence.
+//  This service handles all database operations for the app, including CRUD operations
+//  for Users, Rounds, and Holes, as well as statistics computation.
+//
+//  Key Features:
+//  - User management: Fetch and save the primary user profile
+//  - Round management: Create rounds with holes, fetch rounds (with soft delete filtering),
+//    mark rounds as discarded, and permanently delete discarded rounds
+//  - Hole management: Fetch holes by round and hole number, save hole updates
+//  - Statistics: Aggregate statistics across all non-discarded rounds
+//
+//  Architecture:
+//  - Uses ModelContext for all SwiftData operations
+//  - Implements soft delete pattern (isDiscarded flag) for rounds
+//  - Automatically creates holes when creating a new round
+//  - Provides fallback hole creation if holes are missing
+//
 
 import Foundation
 import SwiftData
