@@ -8,26 +8,30 @@
 import SwiftUI
 
 struct RoundDetailView: View {
-    let round: Round
+    @StateObject private var viewModel: RoundDetailViewModel
+    
+    init(round: Round, dataService: DataServiceProtocol) {
+        _viewModel = StateObject(wrappedValue: RoundDetailViewModel(round: round, dataService: dataService))
+    }
     
     var body: some View {
         List {
             Section {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(round.courseName)
+                    Text(viewModel.round.courseName)
                         .font(.title2)
                         .fontWeight(.bold)
                     
-                    Text(round.startDate, style: .date)
+                    Text(viewModel.round.startDate, style: .date)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     
                     HStack {
-                        Text("Total: \(round.totalStrokes) strokes")
+                        Text("Total: \(viewModel.round.totalStrokes) strokes")
                         Spacer()
-                        if round.scoreRelativeToPar != 0 {
-                            Text(round.scoreRelativeToPar > 0 ? "+\(round.scoreRelativeToPar)" : "\(round.scoreRelativeToPar)")
-                                .foregroundColor(round.scoreRelativeToPar > 0 ? .red : .green)
+                        if viewModel.round.scoreRelativeToPar != 0 {
+                            Text(viewModel.round.scoreRelativeToPar > 0 ? "+\(viewModel.round.scoreRelativeToPar)" : "\(viewModel.round.scoreRelativeToPar)")
+                                .foregroundColor(viewModel.round.scoreRelativeToPar > 0 ? .red : .green)
                         }
                     }
                     .font(.subheadline)
@@ -36,8 +40,18 @@ struct RoundDetailView: View {
             }
             
             Section {
-                ForEach(round.holes.sorted(by: { $0.holeNumber < $1.holeNumber }), id: \.holeNumber) { hole in
-                    HoleDetailRowView(hole: hole)
+                ForEach(viewModel.round.holes.sorted(by: { $0.holeNumber < $1.holeNumber }), id: \.holeNumber) { hole in
+                    if viewModel.isEditing {
+                        EditableHoleDetailRowView(
+                            hole: hole,
+                            onUpdate: { drives, longShots, approaches, chips, putts, par in
+                                viewModel.updateHole(hole, drives: drives, longShots: longShots, approaches: approaches, chips: chips, putts: putts, par: par)
+                                viewModel.refreshRound()
+                            }
+                        )
+                    } else {
+                        HoleDetailRowView(hole: hole)
+                    }
                 }
             } header: {
                 Text("Holes")
@@ -45,6 +59,13 @@ struct RoundDetailView: View {
         }
         .navigationTitle("Round Details")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(viewModel.isEditing ? "Done" : "Edit") {
+                    viewModel.isEditing.toggle()
+                }
+            }
+        }
     }
 }
 
@@ -76,6 +97,125 @@ struct HoleDetailRowView: View {
             .foregroundColor(.secondary)
         }
         .padding(.vertical, 2)
+    }
+}
+
+struct EditableHoleDetailRowView: View {
+    let hole: Hole
+    let onUpdate: (Int, Int, Int, Int, Int, Int) -> Void
+    
+    @State private var drives: Int
+    @State private var longShots: Int
+    @State private var approaches: Int
+    @State private var chips: Int
+    @State private var putts: Int
+    @State private var par: Int
+    
+    init(hole: Hole, onUpdate: @escaping (Int, Int, Int, Int, Int, Int) -> Void) {
+        self.hole = hole
+        self.onUpdate = onUpdate
+        _drives = State(initialValue: hole.drives)
+        _longShots = State(initialValue: hole.longShots)
+        _approaches = State(initialValue: hole.approaches)
+        _chips = State(initialValue: hole.chips)
+        _putts = State(initialValue: hole.putts)
+        _par = State(initialValue: hole.par)
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Hole \(hole.holeNumber)")
+                    .font(.headline)
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text("Par")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Stepper("", value: $par, in: 3...6)
+                        .labelsHidden()
+                    Text("\(par)")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .frame(width: 30)
+                }
+            }
+            
+            VStack(spacing: 8) {
+                EditableShotRow(title: "Drives", icon: "arrow.up", value: $drives)
+                EditableShotRow(title: "Long Shots", icon: "arrow.up.right", value: $longShots)
+                EditableShotRow(title: "Approaches", icon: "arrow.right", value: $approaches)
+                EditableShotRow(title: "Chips", icon: "arrow.down.right", value: $chips)
+                EditableShotRow(title: "Putts", icon: "circle", value: $putts)
+            }
+            
+            HStack {
+                Spacer()
+                Text("Total: \(drives + longShots + approaches + chips + putts) strokes")
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+            }
+        }
+        .padding(.vertical, 8)
+        .onChange(of: drives) { _, _ in saveChanges() }
+        .onChange(of: longShots) { _, _ in saveChanges() }
+        .onChange(of: approaches) { _, _ in saveChanges() }
+        .onChange(of: chips) { _, _ in saveChanges() }
+        .onChange(of: putts) { _, _ in saveChanges() }
+        .onChange(of: par) { _, _ in saveChanges() }
+    }
+    
+    private func saveChanges() {
+        onUpdate(drives, longShots, approaches, chips, putts, par)
+    }
+}
+
+struct EditableShotRow: View {
+    let title: String
+    let icon: String
+    @Binding var value: Int
+    
+    var body: some View {
+        HStack {
+            Label(title, systemImage: icon)
+                .font(.subheadline)
+                .frame(width: 120, alignment: .leading)
+            
+            Spacer()
+            
+            Button {
+                if value > 0 {
+                    value -= 1
+                    Haptics.impact(.light)
+                }
+            } label: {
+                Image(systemName: "minus.circle.fill")
+                    .foregroundColor(value > 0 ? .red : .gray)
+            }
+            .buttonStyle(.plain)
+            .disabled(value == 0)
+            
+            TextField("", value: $value, format: .number)
+                .keyboardType(.numberPad)
+                .textFieldStyle(.roundedBorder)
+                .frame(width: 60)
+                .multilineTextAlignment(.center)
+                .onChange(of: value) { oldValue, newValue in
+                    if newValue < 0 {
+                        value = 0
+                    }
+                }
+            
+            Button {
+                value += 1
+                Haptics.impact(.light)
+            } label: {
+                Image(systemName: "plus.circle.fill")
+                    .foregroundColor(.green)
+            }
+            .buttonStyle(.plain)
+        }
     }
 }
 

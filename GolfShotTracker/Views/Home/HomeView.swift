@@ -79,7 +79,7 @@ struct HomeView: View {
             }
             .navigationDestination(isPresented: $showRoundDetail) {
                 if let round = selectedRound {
-                    RoundDetailView(round: round)
+                    RoundDetailView(round: round, dataService: dataService)
                 }
             }
         }
