@@ -174,6 +174,9 @@ class SwiftDataService: DataServiceProtocol {
         var totalApproaches = 0
         var totalChips = 0
         var totalPutts = 0
+        var totalFairwayBunkerShots = 0
+        var totalGreensideBunkerShots = 0
+        var totalPenalties = 0
         
         for round in rounds {
             for hole in round.holes {
@@ -183,6 +186,9 @@ class SwiftDataService: DataServiceProtocol {
                 totalApproaches += hole.approaches
                 totalChips += hole.chips
                 totalPutts += hole.putts
+                totalFairwayBunkerShots += hole.fairwayBunkerShots
+                totalGreensideBunkerShots += hole.greensideBunkerShots
+                totalPenalties += hole.penalties
             }
         }
         
@@ -193,7 +199,10 @@ class SwiftDataService: DataServiceProtocol {
             totalLongShots: totalLongShots,
             totalApproaches: totalApproaches,
             totalChips: totalChips,
-            totalPutts: totalPutts
+            totalPutts: totalPutts,
+            totalFairwayBunkerShots: totalFairwayBunkerShots,
+            totalGreensideBunkerShots: totalGreensideBunkerShots,
+            totalPenalties: totalPenalties
         )
     }
 }

@@ -15,9 +15,12 @@ struct StatsSummary {
     var totalApproaches: Int
     var totalChips: Int
     var totalPutts: Int
+    var totalFairwayBunkerShots: Int
+    var totalGreensideBunkerShots: Int
+    var totalPenalties: Int
     
     var totalShots: Int {
-        totalDrives + totalLongShots + totalApproaches + totalChips + totalPutts
+        totalDrives + totalLongShots + totalApproaches + totalChips + totalPutts + totalFairwayBunkerShots + totalGreensideBunkerShots + totalPenalties
     }
     
     var averagePuttsPerHole: Double {

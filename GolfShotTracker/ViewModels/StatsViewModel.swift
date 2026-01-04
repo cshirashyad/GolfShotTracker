@@ -18,7 +18,10 @@ class StatsViewModel: ObservableObject {
         totalLongShots: 0,
         totalApproaches: 0,
         totalChips: 0,
-        totalPutts: 0
+        totalPutts: 0,
+        totalFairwayBunkerShots: 0,
+        totalGreensideBunkerShots: 0,
+        totalPenalties: 0
     )
     @Published var advice: String = ""
     @Published var isLoading: Bool = false

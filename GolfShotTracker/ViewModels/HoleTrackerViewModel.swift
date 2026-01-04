@@ -15,6 +15,9 @@ enum ShotType {
     case approaches
     case chips
     case putts
+    case fairwayBunkerShots
+    case greensideBunkerShots
+    case penalties
 }
 
 @MainActor
@@ -89,6 +92,12 @@ class HoleTrackerViewModel: ObservableObject {
             hole.chips += 1
         case .putts:
             hole.putts += 1
+        case .fairwayBunkerShots:
+            hole.fairwayBunkerShots += 1
+        case .greensideBunkerShots:
+            hole.greensideBunkerShots += 1
+        case .penalties:
+            hole.penalties += 1
         }
         
         dataService.saveHole(hole)
@@ -118,6 +127,18 @@ class HoleTrackerViewModel: ObservableObject {
         case .putts:
             if hole.putts > 0 {
                 hole.putts -= 1
+            }
+        case .fairwayBunkerShots:
+            if hole.fairwayBunkerShots > 0 {
+                hole.fairwayBunkerShots -= 1
+            }
+        case .greensideBunkerShots:
+            if hole.greensideBunkerShots > 0 {
+                hole.greensideBunkerShots -= 1
+            }
+        case .penalties:
+            if hole.penalties > 0 {
+                hole.penalties -= 1
             }
         }
         

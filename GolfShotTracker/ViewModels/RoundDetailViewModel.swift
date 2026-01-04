@@ -21,12 +21,15 @@ class RoundDetailViewModel: ObservableObject {
         self.dataService = dataService
     }
     
-    func updateHole(_ hole: Hole, drives: Int, longShots: Int, approaches: Int, chips: Int, putts: Int, par: Int) {
+    func updateHole(_ hole: Hole, drives: Int, longShots: Int, approaches: Int, chips: Int, putts: Int, fairwayBunkerShots: Int, greensideBunkerShots: Int, penalties: Int, par: Int) {
         hole.drives = max(0, drives)
         hole.longShots = max(0, longShots)
         hole.approaches = max(0, approaches)
         hole.chips = max(0, chips)
         hole.putts = max(0, putts)
+        hole.fairwayBunkerShots = max(0, fairwayBunkerShots)
+        hole.greensideBunkerShots = max(0, greensideBunkerShots)
+        hole.penalties = max(0, penalties)
         hole.par = par
         dataService.saveHole(hole)
     }

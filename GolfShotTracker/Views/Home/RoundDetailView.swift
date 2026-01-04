@@ -44,8 +44,8 @@ struct RoundDetailView: View {
                     if viewModel.isEditing {
                         EditableHoleDetailRowView(
                             hole: hole,
-                            onUpdate: { drives, longShots, approaches, chips, putts, par in
-                                viewModel.updateHole(hole, drives: drives, longShots: longShots, approaches: approaches, chips: chips, putts: putts, par: par)
+                            onUpdate: { d, ls, a, c, p, fb, gb, pen, par in
+                                viewModel.updateHole(hole, drives: d, longShots: ls, approaches: a, chips: c, putts: p, fairwayBunkerShots: fb, greensideBunkerShots: gb, penalties: pen, par: par)
                                 viewModel.refreshRound()
                             }
                         )
@@ -83,12 +83,24 @@ struct HoleDetailRowView: View {
                     .foregroundColor(.secondary)
             }
             
-            HStack(spacing: 12) {
+            HStack(spacing: 8) {
                 Label("\(hole.drives)", systemImage: "arrow.up")
                 Label("\(hole.longShots)", systemImage: "arrow.up.right")
                 Label("\(hole.approaches)", systemImage: "arrow.right")
                 Label("\(hole.chips)", systemImage: "arrow.down.right")
                 Label("\(hole.putts)", systemImage: "circle")
+                if hole.fairwayBunkerShots > 0 {
+                    Label("\(hole.fairwayBunkerShots)", systemImage: "square.fill")
+                        .foregroundColor(.brown)
+                }
+                if hole.greensideBunkerShots > 0 {
+                    Label("\(hole.greensideBunkerShots)", systemImage: "square.fill")
+                        .foregroundColor(.orange)
+                }
+                if hole.penalties > 0 {
+                    Label("\(hole.penalties)", systemImage: "exclamationmark.triangle.fill")
+                        .foregroundColor(.red)
+                }
                 Spacer()
                 Text("Total: \(hole.totalStrokes)")
                     .fontWeight(.semibold)
@@ -102,16 +114,19 @@ struct HoleDetailRowView: View {
 
 struct EditableHoleDetailRowView: View {
     let hole: Hole
-    let onUpdate: (Int, Int, Int, Int, Int, Int) -> Void
+    let onUpdate: (Int, Int, Int, Int, Int, Int, Int, Int, Int) -> Void
     
     @State private var drives: Int
     @State private var longShots: Int
     @State private var approaches: Int
     @State private var chips: Int
     @State private var putts: Int
+    @State private var fairwayBunkerShots: Int
+    @State private var greensideBunkerShots: Int
+    @State private var penalties: Int
     @State private var par: Int
     
-    init(hole: Hole, onUpdate: @escaping (Int, Int, Int, Int, Int, Int) -> Void) {
+    init(hole: Hole, onUpdate: @escaping (Int, Int, Int, Int, Int, Int, Int, Int, Int) -> Void) {
         self.hole = hole
         self.onUpdate = onUpdate
         _drives = State(initialValue: hole.drives)
@@ -119,6 +134,9 @@ struct EditableHoleDetailRowView: View {
         _approaches = State(initialValue: hole.approaches)
         _chips = State(initialValue: hole.chips)
         _putts = State(initialValue: hole.putts)
+        _fairwayBunkerShots = State(initialValue: hole.fairwayBunkerShots)
+        _greensideBunkerShots = State(initialValue: hole.greensideBunkerShots)
+        _penalties = State(initialValue: hole.penalties)
         _par = State(initialValue: hole.par)
     }
     
@@ -148,11 +166,14 @@ struct EditableHoleDetailRowView: View {
                 EditableShotRow(title: "Approaches", icon: "arrow.right", value: $approaches)
                 EditableShotRow(title: "Chips", icon: "arrow.down.right", value: $chips)
                 EditableShotRow(title: "Putts", icon: "circle", value: $putts)
+                EditableShotRow(title: "Fairway Bunker", icon: "square.fill", value: $fairwayBunkerShots)
+                EditableShotRow(title: "Greenside Bunker", icon: "square.fill", value: $greensideBunkerShots)
+                EditableShotRow(title: "Penalties", icon: "exclamationmark.triangle.fill", value: $penalties)
             }
             
             HStack {
                 Spacer()
-                Text("Total: \(drives + longShots + approaches + chips + putts) strokes")
+                Text("Total: \(totalStrokes) strokes")
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
             }
@@ -163,11 +184,18 @@ struct EditableHoleDetailRowView: View {
         .onChange(of: approaches) { _, _ in saveChanges() }
         .onChange(of: chips) { _, _ in saveChanges() }
         .onChange(of: putts) { _, _ in saveChanges() }
+        .onChange(of: fairwayBunkerShots) { _, _ in saveChanges() }
+        .onChange(of: greensideBunkerShots) { _, _ in saveChanges() }
+        .onChange(of: penalties) { _, _ in saveChanges() }
         .onChange(of: par) { _, _ in saveChanges() }
     }
     
+    private var totalStrokes: Int {
+        drives + longShots + approaches + chips + putts + fairwayBunkerShots + greensideBunkerShots + penalties
+    }
+    
     private func saveChanges() {
-        onUpdate(drives, longShots, approaches, chips, putts, par)
+        onUpdate(drives, longShots, approaches, chips, putts, fairwayBunkerShots, greensideBunkerShots, penalties, par)
     }
 }
 

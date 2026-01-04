@@ -17,6 +17,9 @@ final class Hole {
     var approaches: Int
     var chips: Int
     var putts: Int
+    var fairwayBunkerShots: Int
+    var greensideBunkerShots: Int
+    var penalties: Int
     var round: Round?
     
     init(holeNumber: Int, par: Int = 4, round: Round? = nil) {
@@ -27,11 +30,14 @@ final class Hole {
         self.approaches = 0
         self.chips = 0
         self.putts = 0
+        self.fairwayBunkerShots = 0
+        self.greensideBunkerShots = 0
+        self.penalties = 0
         self.round = round
     }
     
     var totalStrokes: Int {
-        drives + longShots + approaches + chips + putts
+        drives + longShots + approaches + chips + putts + fairwayBunkerShots + greensideBunkerShots + penalties
     }
     
     var scoreRelativeToPar: Int {

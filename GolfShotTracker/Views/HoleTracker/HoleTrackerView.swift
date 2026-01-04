@@ -93,6 +93,30 @@ struct HoleTrackerView: View {
                                 onIncrement: { viewModel.incrementShot(type: .putts) },
                                 onDecrement: { viewModel.decrementShot(type: .putts) }
                             )
+                            
+                            ShotCounterRowView(
+                                title: "Fairway Bunker",
+                                icon: "square.fill",
+                                count: hole.fairwayBunkerShots,
+                                onIncrement: { viewModel.incrementShot(type: .fairwayBunkerShots) },
+                                onDecrement: { viewModel.decrementShot(type: .fairwayBunkerShots) }
+                            )
+                            
+                            ShotCounterRowView(
+                                title: "Greenside Bunker",
+                                icon: "square.fill",
+                                count: hole.greensideBunkerShots,
+                                onIncrement: { viewModel.incrementShot(type: .greensideBunkerShots) },
+                                onDecrement: { viewModel.decrementShot(type: .greensideBunkerShots) }
+                            )
+                            
+                            ShotCounterRowView(
+                                title: "Penalties",
+                                icon: "exclamationmark.triangle.fill",
+                                count: hole.penalties,
+                                onIncrement: { viewModel.incrementShot(type: .penalties) },
+                                onDecrement: { viewModel.decrementShot(type: .penalties) }
+                            )
                         }
                         .padding(.horizontal)
                         
