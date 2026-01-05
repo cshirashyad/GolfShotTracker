@@ -76,9 +76,12 @@ struct HomeView: View {
                     } else {
                         createdRound = round
                     }
-                    print("🟠 Setting showHoleTracker = true")
-                    showHoleTracker = true
+                    //print("🟠 Setting showHoleTracker = true")
+                    //showHoleTracker = true
                 }
+            }
+            .onChange(of: createdRound) {
+                if createdRound != nil { showHoleTracker = true }
             }
             .fullScreenCover(isPresented: $showHoleTracker) {
                 if let round = createdRound {
