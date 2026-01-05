@@ -67,7 +67,7 @@ struct ProfileView: View {
                     Text("This information helps personalize your golf tracking experience.")
                 }
             }
-            .navigationTitle("Welcome to GolfTracker")
+            .navigationTitle("Golf Stroke Tracker")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {

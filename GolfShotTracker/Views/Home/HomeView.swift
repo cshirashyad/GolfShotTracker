@@ -54,7 +54,7 @@ struct HomeView: View {
                     roundsList
                 }
             }
-            .navigationTitle("GolfTracker")
+            .navigationTitle("Golf Stroke Tracker")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
@@ -151,4 +151,3 @@ struct HomeView: View {
         }
     }
 }
-
