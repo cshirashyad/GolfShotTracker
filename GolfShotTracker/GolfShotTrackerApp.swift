@@ -21,6 +21,9 @@ import SwiftData
 
 @main
 struct GolfShotTrackerApp: App {
+    // Register your custom AppDelegate for Firebase setup
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             User.self,
