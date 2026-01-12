@@ -6,6 +6,14 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		76F1514F2F149454002B25DF /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 76F1514E2F149454002B25DF /* FirebaseCrashlytics */; };
+		76F151512F14945A002B25DF /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 76F151502F14945A002B25DF /* FirebaseAnalytics */; };
+		76F151532F14964E002B25DF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 76F151522F14964E002B25DF /* GoogleService-Info.plist */; };
+		76F151542F14964E002B25DF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 76F151522F14964E002B25DF /* GoogleService-Info.plist */; };
+		76F151552F14964E002B25DF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 76F151522F14964E002B25DF /* GoogleService-Info.plist */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		76CEF94C2F09CDA900A3E46F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +35,7 @@
 		76CEF93C2F09CDA600A3E46F /* GolfShotTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GolfShotTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		76CEF94B2F09CDA900A3E46F /* GolfShotTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GolfShotTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		76CEF9552F09CDA900A3E46F /* GolfShotTrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GolfShotTrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		76F151522F14964E002B25DF /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +61,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				76F151512F14945A002B25DF /* FirebaseAnalytics in Frameworks */,
+				76F1514F2F149454002B25DF /* FirebaseCrashlytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,7 +89,9 @@
 				76CEF93E2F09CDA600A3E46F /* GolfShotTracker */,
 				76CEF94E2F09CDA900A3E46F /* GolfShotTrackerTests */,
 				76CEF9582F09CDA900A3E46F /* GolfShotTrackerUITests */,
+				76F1514D2F149454002B25DF /* Frameworks */,
 				76CEF93D2F09CDA600A3E46F /* Products */,
+				76F151522F14964E002B25DF /* GoogleService-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -90,6 +103,13 @@
 				76CEF9552F09CDA900A3E46F /* GolfShotTrackerUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		76F1514D2F149454002B25DF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -112,6 +132,8 @@
 			);
 			name = GolfShotTracker;
 			packageProductDependencies = (
+				76F1514E2F149454002B25DF /* FirebaseCrashlytics */,
+				76F151502F14945A002B25DF /* FirebaseAnalytics */,
 			);
 			productName = GolfShotTracker;
 			productReference = 76CEF93C2F09CDA600A3E46F /* GolfShotTracker.app */;
@@ -195,6 +217,9 @@
 			);
 			mainGroup = 76CEF9332F09CDA600A3E46F;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				76F1514C2F149126002B25DF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 76CEF93D2F09CDA600A3E46F /* Products */;
 			projectDirPath = "";
@@ -212,6 +237,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				76F151552F14964E002B25DF /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -219,6 +245,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				76F151532F14964E002B25DF /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -226,6 +253,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				76F151542F14964E002B25DF /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -572,6 +600,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		76F1514C2F149126002B25DF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.7.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		76F1514E2F149454002B25DF /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 76F1514C2F149126002B25DF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		76F151502F14945A002B25DF /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 76F1514C2F149126002B25DF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 76CEF9342F09CDA600A3E46F /* Project object */;
 }
