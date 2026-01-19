@@ -14,7 +14,7 @@
 //  - Form validation with email format checking
 //  - Save confirmation alert
 //  - Data management (hard delete discarded rounds)
-//  - Placeholder sections for future features (cloud sync, multi-player)
+//  - Placeholder sections for future features (cloud sync)
 //
 //  Sections:
 //  1. Profile: Editable user information
@@ -82,14 +82,6 @@ struct SettingsView: View {
                     // Placeholder for future features
                     HStack {
                         Text("Cloud Sync")
-                        Spacer()
-                        Text("Coming Soon")
-                            .foregroundColor(.secondary)
-                    }
-                    .disabled(true)
-                    
-                    HStack {
-                        Text("Multi-Player Scoring")
                         Spacer()
                         Text("Coming Soon")
                             .foregroundColor(.secondary)
